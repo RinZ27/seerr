@@ -265,6 +265,14 @@ class ImageProxy {
     path: string,
     cacheKey: string
   ): Promise<ImageResponse | null> {
+    if (path.startsWith('//') || path.includes('://')) {
+      logger.error('Absolute or protocol-relative URL detected in ImageProxy', {
+        label: 'Image Cache',
+        path,
+      });
+      return null;
+    }
+
     try {
       const directory = join(this.getCacheDirectory(), cacheKey);
       const response = await this.axios.get(path, {
